@@ -1,6 +1,10 @@
 library(lme4)
-library(ggplot2)
 library(plm)
+#Packages for plotting
+library(ggplot2)
+library(tidyverse)
+library(ggridges)
+library(latex2exp)
 
 simulate_data_LMM<- function(sim, b0, b1, n, m, slopes=FALSE, LMM=FALSE, logistic=FALSE){
   #simulation id, cluster id and observation within cluster id
@@ -87,7 +91,7 @@ transform_data <- function(df, sim, n, m){
 }
 
 #Function to estimate regression coefficients by using simulated data from simulate_data_LMM()
-lmm <- function(sim, b0, b1, n, m, slopes=FALSE){
+lmm <- function(sim, b0, bW, bB, n, m, slopes=FALSE){
   beta0=c()
   beta1=c()
   beta1_c=c()
@@ -96,7 +100,7 @@ lmm <- function(sim, b0, b1, n, m, slopes=FALSE){
   betaB=c()
   #simulate data
   #df = simulate_data_LMM(sim, b0, b1, n, m, slopes)
-  df = simulate_data_LMM_BW(sim, b0, 5, -10, n, m, slopes)
+  df = simulate_data_LMM_BW(sim, b0, bW, bB, n, m, slopes)
   df_transformed = transform_data(df, sim, n, m)
   pdata = pdata.frame(df, index="cluster_id")
   #for each simulation, estimate regression coefficients and store them
@@ -134,18 +138,46 @@ lmm <- function(sim, b0, b1, n, m, slopes=FALSE){
 }
 
 
-m=5
+m=10
 n=3
-b0=-10
-b1=10
-sim=3
+b0=-1
+bW=3
+bB=8
+sim=100
 
 df=simulate_data_LMM_BW(sim, b0, 5, -10, n, m, slopes=TRUE)
 ggplot(df, aes(x=x, y=y, color=cluster_id, shape=cluster_id))+geom_point()
 
 
-lmm(sim, b0, b1, n, m, slopes=FALSE)
-lmm(sim, b0, b1, n, m, slopes=TRUE)
+lmm(sim, b0, bW, bB, n, m, slopes=FALSE)
+lmm(sim, b0, bW, bB, n, m, slopes=TRUE)
+#Random intercept only LMM
+
+betas=lmm(sim, b0, bW, bB, n, m, slopes=FALSE)
+
+histogram_beta<-ggplot(gather(subset(betas, select = -c(1,6))), aes(x = value, y = key, group = key, fill= key))+
+  geom_density_ridges2(stat="binline", bins=50, alpha=0.6, scale=5, color = "azure4")+
+  #scale_fill_manual(name="", values=c("darkolivegreen2","brown1","cyan3"))+
+  scale_fill_brewer(name="Case", palette="Set1")+
+  geom_vline(aes(xintercept=bW, color="True beta"), color= "#bf5252", linewidth=0.9, linetype="dashed", alpha=0.8)+
+  labs(x=TeX(r'(Estimated $\beta_1$ and $\beta_W$)'),y=TeX(r'(Count)'))+
+  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
+  annotate(geom = "text", x=8, y=7, label=TeX(r'($\beta_W=?$)'), size=5, color="#bf5252")
+histogram_beta
+
+#Random intercept and slopes LMM
+
+betas=lmm(sim, b0, bW, bB, n, m, slopes=TRUE)
+
+histogram_beta<-ggplot(gather(subset(betas, select = -c(1,6))), aes(x = value, y = key, group = key, fill= key))+
+  geom_density_ridges2(stat="binline", bins=50, alpha=0.6, scale=5, color = "azure4")+
+  #scale_fill_manual(name="", values=c("darkolivegreen2","brown1","cyan3"))+
+  scale_fill_brewer(name="Case", palette="Set1")+
+  geom_vline(aes(xintercept=bW, color="True beta"), color= "#bf5252", linewidth=0.9, linetype="dashed", alpha=0.8)+
+  labs(x=TeX(r'(Estimated $\beta_1$ and $\beta_W$)'),y=TeX(r'(Count)'))+
+  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
+  annotate(geom = "text", x=8, y=7, label=TeX(r'($\beta_W=?$)'), size=5, color="#bf5252")
+histogram_beta
 
 
 
