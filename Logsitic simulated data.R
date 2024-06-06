@@ -1,5 +1,4 @@
 library(simcausal)
-library(mclogit)
 library(lme4)
 library(survival)
 #Packages for plotting
@@ -40,13 +39,14 @@ simulate_data_log<-function(sim, b0, bW, bB, n, m){
   return(df)
 }
 
-#Function to estimate regression coefficients by using simulated data from simulate_data_LMM()
+#Function to estimate regression coefficients by using simulated data from simulate_data_log()
 log <- function(sim, b0, bW, bB, n, m){
   beta0=c()
   beta1=c()
   beta1_c=c()
   betaW=c()
   betaB=c()
+  betaW_glm=c()
   
   #simulate data
   df = simulate_data_log(sim, b0, bW, bB, n, m)
@@ -55,17 +55,20 @@ log <- function(sim, b0, bW, bB, n, m){
   for (i in 1:sim){
     log = glmer(y~ x + (1|cluster_id), data = df[df$sim_id == i,], family = binomial)
       
-    log_c = clogit(y~ x +strata(cluster_id), data = df[df$sim_id == i,])
+    log_c = clogit(y~ x + strata(cluster_id), data = df[df$sim_id == i,])
       
     log_bw= glmer(y~  x_dev_from_mean + x_mean_cluster + (1|cluster_id), data = df[df$sim_id == i,], family = binomial)
+    
+    log_bw_glm=glm(y~x_dev_from_mean + x_mean_cluster, data = df[df$sim_id == i,], family = binomial)
   
     beta0=append(beta0, fixef(log)[1])
     beta1=append(beta1, fixef(log)[2])
     beta1_c=append(beta1_c,coefficients(log_c))
     betaW=append(betaW, fixef(log_bw)[2])
     betaB=append(betaB, fixef(log_bw)[3])
+    betaW_glm=append(betaW_glm, coef(log_bw_glm)[2])
   }
-  betas=data.frame(beta0, beta1, beta1_c, betaW, betaB)
+  betas=data.frame(beta0, beta1, beta1_c, betaW, betaB, betaW_glm)
   return(betas)
 }
 
@@ -79,6 +82,7 @@ sim=200
 
 set.seed(3456)
 
+
 #Only random intercept
 betas_log=log(sim, b0, bW, bB, n, m)
 
@@ -89,10 +93,10 @@ df_qm
 
 histogram_beta<-ggplot(gather(subset(betas_log, select = -c(1,5))), aes(x = value, y = key, group = key, fill= key))+
   geom_density_ridges2(stat="binline", bins=30, alpha=0.6, scale=5, color = "azure4")+
-  scale_fill_viridis(name="", discrete=TRUE, option="plasma")+
+  scale_fill_viridis(name="Fitting methods", discrete=TRUE, option="plasma", labels=c("GLM","Between-within","Conditional likelihood", "Mixed effects approach"), breaks=c("betaW_glm", "betaW", "beta1_c", "beta1"))+
   geom_vline(aes(xintercept=bW, color="True beta"), color= "black", linewidth=0.9, linetype="dashed", alpha=0.8)+
   labs(x=TeX(r'(Estimated $\beta_1$ and $\beta_W$)'),y=TeX(r'(Count)'))+
-  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
+  theme(axis.text=element_text(size=12),axis.title=element_text(size=13),legend.text = element_text(size=12),legend.title = element_text(size=14), axis.text.y = element_blank())+
   annotate(geom = "text", x=0.7, y=6.2, label=TeX(r'($\beta_W=1$)'), size=5, color="black")
 histogram_beta
 
