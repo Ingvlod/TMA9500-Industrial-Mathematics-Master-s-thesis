@@ -30,17 +30,19 @@ df_slope_bw <- data.frame(Intercepts=coef(lmm_bw)$Campus[,1]+fixef(lmm_bw)[3]*Ca
 plot_lmm <- ggplot(df, aes(x=Poeng_kar_vgs, y=TotalScore))+geom_blank()+
   geom_abline(data=df_slope, aes(intercept=Intercepts, slope=Slope), linetype="dashed")+
   geom_abline(data=df_slope, aes(intercept=Population_inter, slope=Slope), linewidth=1.5, color="red")+
-  theme(axis.text=element_text(size=13),axis.title=element_text(size=15))+
+  theme(axis.text=element_text(size=16),axis.title=element_text(size=18))+
   ylim(25,90)+
-  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))
+  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))+
+  annotate(geom = "text", x=45, y=80, label=TeX(r'($\hat{\beta}_1=1.152$)'), size=7, color="black")
 plot_lmm
 
 plot_lmm_bw <- ggplot(df, aes(x=Poeng_kar_vgs, y=TotalScore))+geom_blank()+
   geom_abline(data=df_slope_bw, aes(intercept=Intercepts, slope=Slope), linetype="dashed")+
   geom_abline(data=df_slope_bw, aes(intercept=Population_inter, slope=Slope), linewidth=1.5, color="red")+
   ylim(25,90)+
-  theme(axis.text=element_text(size=15),axis.title=element_text(size=18))+
-  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))
+  theme(axis.text=element_text(size=16),axis.title=element_text(size=18))+
+  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))+
+  annotate(geom = "text", x=45, y=80, label=TeX(r'($\hat{\beta}_W=1.058$)'), size=7, color="black")
 plot_lmm_bw
 
 
@@ -110,15 +112,11 @@ lmm_bw=lmer(TotalScore~  Dev_from_campus_mean_karakter_vgs + Campus_mean_poeng_k
 lmm=lmer(TotalScore~ Poeng_kar_vgs + (1|Campus), data = df_sampled)
 summary(lmm_bw)
 summary(lmm)
-
-coef(lmm)$Campus$Poeng_kar_vgs
-fixef(lmm_bw)[2]
-fixef(lmm)[2]
+fixef(lmm)
+round(fixef(lmm)[2], 3)
 
 Campus_mean_poeng_kar_vgs <- unique(df_sampled$Campus_mean_poeng_kar_vgs)
 
-length(Campus_mean_poeng_kar_vgs)
-coef(lmm)$Campus[,1]
 
 df_slope <- data.frame(Intercepts=coef(lmm)$Campus[,1], Slope=coef(lmm)$Campus$Poeng_kar_vgs, Population_inter=fixef(lmm)[1])
 df_slope_bw <- data.frame(Intercepts=coef(lmm_bw)$Campus[,1]+fixef(lmm_bw)[3]*Campus_mean_poeng_kar_vgs-fixef(lmm_bw)[2]*Campus_mean_poeng_kar_vgs, Slope=fixef(lmm_bw)[2], Population_inter=fixef(lmm_bw)[1]+(fixef(lmm_bw)[3]-fixef(lmm_bw)[2])*mean(Campus_mean_poeng_kar_vgs))
@@ -126,17 +124,19 @@ df_slope_bw <- data.frame(Intercepts=coef(lmm_bw)$Campus[,1]+fixef(lmm_bw)[3]*Ca
 plot_lmm <- ggplot(df_sampled, aes(x=Poeng_kar_vgs, y=TotalScore))+geom_blank()+
   geom_abline(data=df_slope, aes(intercept=Intercepts, slope=Slope), linetype="dashed")+
   geom_abline(data=df_slope, aes(intercept=Population_inter, slope=Slope), linewidth=1.5, color="red")+
-  theme(axis.text=element_text(size=13),axis.title=element_text(size=15))+
+  theme(axis.text=element_text(size=16),axis.title=element_text(size=18))+
   ylim(25,90)+
-  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))
+  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))+
+  annotate(geom = "text", x=45, y=80, label=TeX(r'($\hat{\beta}_1=1.97$)'), size=7, color="black")
 plot_lmm
 
 plot_lmm_bw <- ggplot(df_sampled, aes(x=Poeng_kar_vgs, y=TotalScore))+geom_blank()+
   geom_abline(data=df_slope_bw, aes(intercept=Intercepts, slope=Slope), linetype="dashed")+
   geom_abline(data=df_slope_bw, aes(intercept=Population_inter, slope=Slope), linewidth=1.5, color="red")+
   ylim(25,90)+
-  theme(axis.text=element_text(size=13),axis.title=element_text(size=15))+
-  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))
+  theme(axis.text=element_text(size=16),axis.title=element_text(size=18))+
+  labs(x=TeX(r'(Average grade, VGS)'),y=TeX(r'(Total score)'))+
+  annotate(geom = "text", x=45, y=80, label=TeX(r'($\hat{\beta}_W=1.357$)'), size=7, color="black")
 plot_lmm_bw
 
 
