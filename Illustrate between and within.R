@@ -79,78 +79,30 @@ df = simulate_data_BW(b0, bW, bB, n, m)
 df_mean = bw_lines(df)
 
 plot <- ggplot(df, aes(x=x, y=y, color=as.factor(cluster_id)))+
-  geom_point(aes(shape="Observed"),show.legend = FALSE)+
-  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW, color=as.factor(cluster_id), linetype="Within"), linewidth=0.5, show.legend = FALSE)+
-  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=5)+
-  geom_abline( aes(intercept=b0, slope=bB,linetype="Between"))+
+  geom_point(aes(shape="Observed"),show.legend = FALSE, size=3)+
+  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW, color=as.factor(cluster_id), linetype="Within"), linewidth=1, show.legend = FALSE)+
+  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=7)+
+  geom_abline( aes(intercept=b0, slope=bB,linetype="Between"), linewidth=1)+
   scale_linetype_manual(name="Effects", values= c( "solid", "dashed"))+
   guides(color="none")+
-  scale_shape_manual(name = "Observed values", values = c(17, 16))+
-  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
+  scale_shape_manual(name = "Values", values = c(17, 16))+
+  theme(axis.text=element_text(size=16),axis.title=element_text(size=17),legend.text = element_text(size=16),legend.title = element_text(size=17))+
   labs(x=TeX(r'(Daily workload (hours))'),y=TeX(r'(Well-being)'))
 plot
 
-lmm_bw=lmer(y~  x_dev_from_mean + x_mean_cluster + (1|cluster_id), data = df)
-lmm=lmer(y~x+ (1|cluster_id), data = df)
-summary(lmm_bw)
-summary(lmm)
-
-df = simulate_data_BW(b0, bW, bB, n, m, slopes=TRUE)
-df_mean = bw_lines(df)
-
-plot <- ggplot(df, aes(x=x, y=y, color=as.factor(cluster_id)))+
-  geom_point(aes(shape="Observed"),show.legend = FALSE)+
-  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW+cluster_slopes, color=as.factor(cluster_id), linetype="Within"), linewidth=0.5, show.legend = FALSE)+
-  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=5)+
-  geom_abline( aes(intercept=b0, slope=bB,linetype="Between"))+
-  scale_linetype_manual(name="Effects", values= c( "solid", "dashed"))+
-  guides(color="none")+
-  scale_shape_manual(name = "Observed values", values = c(17, 16))+
-  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
-  labs(x=TeX(r'(Daily workload (hours))'),y=TeX(r'(Well-being)'))
-plot
 
 df = simulate_data_BW(b0, bW, bB, n, m, randomized = TRUE)
 df_mean = bw_lines(df)
 
 
 plot <- ggplot(df, aes(x=x, y=y, color=as.factor(cluster_id)))+
-  geom_point(aes(shape="Observed"),show.legend = FALSE)+
-  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW, color=as.factor(cluster_id), linetype="Within"), linewidth=0.5, show.legend = FALSE)+
-  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=5)+
+  geom_point(aes(shape="Observed"),show.legend = FALSE, size=3)+
+  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW, color=as.factor(cluster_id), linetype="Within"), linewidth=1, show.legend = FALSE)+
+  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=7)+
   scale_linetype_manual(name="Effects", values= c( "dashed"))+
   guides(color="none")+
-  scale_shape_manual(name = "Observed values", values = c(17, 16))+
-  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
-  labs(x=TeX(r'(Daily workload (hours))'),y=TeX(r'(Well-being)'))
-plot
-
-df = simulate_data_BW(b0, bW, bB, n, m, slopes=TRUE, randomized = TRUE)
-df_mean = bw_lines(df)
-
-plot <- ggplot(df, aes(x=x, y=y, color=as.factor(cluster_id)))+
-  geom_point(aes(shape="Observed"),show.legend = FALSE)+
-  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW+cluster_slopes, color=as.factor(cluster_id), linetype="Within"), linewidth=0.5, show.legend = FALSE)+
-  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=5)+
-  scale_linetype_manual(name="Effects", values= c( "dashed"))+
-  guides(color="none")+
-  scale_shape_manual(name = "Observed values", values = c(17, 16))+
-  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
-  labs(x=TeX(r'(Daily workload (hours))'),y=TeX(r'(Well-being)'))
-plot
-
-
-df = simulate_data_BW(b0, bW, bB, n, m, randomized = TRUE, nonclusterspecifc = TRUE)
-df_mean = bw_lines(df)
-
-plot <- ggplot(df, aes(x=x, y=y, color=as.factor(cluster_id)))+
-  geom_point(aes(shape="Observed"),show.legend = FALSE)+
-  geom_abline(data=df_mean, aes(intercept=intercept, slope=bW+cluster_slopes, color=as.factor(cluster_id), linetype="Within"), linewidth=0.5, show.legend = FALSE)+
-  geom_point(data=df_mean, aes(x=cluster_mean_x,y=cluster_mean_y, shape="Cluster-mean", color=as.factor(cluster_id)), size=5)+
-  scale_linetype_manual(name="Effects", values= c( "dashed"))+
-  guides(color="none")+
-  scale_shape_manual(name = "Observed values", values = c(17, 16))+
-  theme(axis.text=element_text(size=12),axis.title=element_text(size=15),legend.text = element_text(size=14),legend.title = element_text(size=16))+
+  scale_shape_manual(name = "Values", values = c(17, 16))+
+  theme(axis.text=element_text(size=16),axis.title=element_text(size=17),legend.text = element_text(size=16),legend.title = element_text(size=17))+
   labs(x=TeX(r'(Daily workload (hours))'),y=TeX(r'(Well-being)'))
 plot
 

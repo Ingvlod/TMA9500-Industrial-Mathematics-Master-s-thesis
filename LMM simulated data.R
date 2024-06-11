@@ -17,7 +17,7 @@ simulate_data_LMM_BW<- function(sim, b0, bW, bB, n, m, slopes=FALSE){
   u0 <- rep(rnorm(m*sim, 0, 1), each = n)
   
   #Covariate correalted with cluster-specific effect
-  x <- rnorm(n*m*sim, mean = 1+5*u0, sd = 1)
+  x <- rnorm(n*m*sim, mean = 1+1*u0, sd = 1)
   
   #Cluster-mean of covariates
   x_mean_cluster <- c()
@@ -116,11 +116,11 @@ lmm <- function(sim, b0, bW, bB, n, m, slopes=FALSE){
 
 
 m=50
-n=3
+n=5
 b0=-1
 bW=1
 bB=1
-sim=20
+sim=200
 
 
 #Random intercept only LMM
@@ -139,12 +139,17 @@ histogram_beta<-ggplot(gather(subset(betas_lmm, select = -c(1,6))), aes(x = valu
   geom_vline(aes(xintercept=bW, color="True beta"), color= "black", linewidth=0.9, linetype="dashed", alpha=0.8)+
   labs(x=TeX(r'(Estimated $\beta_1$ and $\beta_W$)'),y=TeX(r'(Count)'))+
   theme(axis.text=element_text(size=16),axis.title=element_text(size=17),legend.text = element_text(size=16),legend.title = element_text(size=17), axis.text.y = element_blank())+
-  annotate(geom = "text", x=0.95, y=5.75, label=TeX(r'($\beta_W=1$)'), size=7, color="black")
+  annotate(geom = "text", x=1.1, y=8.5, label=TeX(r'($\beta_W=1$)'), size=7, color="black")
 histogram_beta
 
 
 #Increase cluster size
-n=30
+m=50
+n=50
+b0=-1
+bW=1
+bB=1
+sim=200
 set.seed(3456)
 
 betas_lmm=lmm(sim, b0, bW, bB, n, m, slopes=FALSE)
@@ -160,6 +165,6 @@ histogram_beta<-ggplot(gather(subset(betas_lmm, select = -c(1,6))), aes(x = valu
   geom_vline(aes(xintercept=bW, color="True beta"), color= "black", linewidth=0.9, linetype="dashed", alpha=0.8)+
   labs(x=TeX(r'(Estimated $\beta_1$ and $\beta_W$)'),y=TeX(r'(Count)'))+
   theme(axis.text=element_text(size=16),axis.title=element_text(size=17),legend.text = element_text(size=16),legend.title = element_text(size=17), axis.text.y = element_blank())+
-  annotate(geom = "text", x=0.95, y=5.75, label=TeX(r'($\beta_W=1$)'), size=7, color="black")
+  annotate(geom = "text", x=0.985, y=8.5, label=TeX(r'($\beta_W=1$)'), size=7, color="black")
 histogram_beta
 
